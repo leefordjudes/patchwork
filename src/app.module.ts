@@ -6,7 +6,7 @@ import { m1CreditSaleSchema } from './model/m1-credit-sale-schema';
 import { m1CashSaleSchema } from './model/m1-cash-sale.schema';
 
 // const URI = 'mongodb+srv://username:password@host/database?retryWrites=true&w=majority';
-const URI = 'mongodb://localhost/stationerypatchwork';
+const URI = 'mongodb://localhost/vs-patchwork';
 
 @Module({
   imports: [
