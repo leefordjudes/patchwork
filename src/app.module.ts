@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { saleSchema } from './model/sale.schema';
 
 // const URI = 'mongodb+srv://username:password@host/database?retryWrites=true&w=majority';
-const URI = 'mongodb://localhost/vs-patchwork';
+const URI = 'mongodb://localhost/stationerypatchwork';
 // const URI = 'mongodb://localhost/velavanstationery';
 
 @Module({
