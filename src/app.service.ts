@@ -145,20 +145,17 @@ export class AppService {
     return result;
   }
   async processCashSale(from_date: string, to_date: string) {
-    console.log(1);
     let cashSales = await this.saleModel.aggregate([
       {
         $match: {
           date: { $gte: new Date(from_date), $lte: new Date(to_date) },
           saleType: 'cash',
-          // voucherNo
         },
       },
       { $sort: { date: 1 } },
       {
         $project: {
           date: { $dateToString: { format: '%d-%m-%Y', date: '$date' } },
-          // date: { $dateToString: { format: '%d', date: '$date' } },
           amount: 1,
           invTrns: {
             $map: {
@@ -207,13 +204,11 @@ export class AppService {
           _id: 0,
           // date: '$_id',
           date: { $toString: '$_id' },
-          // date: { $toInt: '$_id' },
           amount: 1,
           invTrns: 1,
         },
       },
     ]);
-    console.log(2);
     cashSales = _.orderBy(cashSales, [x => x.date], ['asc']);
     // return cashSales;
     const cashSaleResult = [];
