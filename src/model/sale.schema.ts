@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose';
+import { roundValue } from '../util';
 
 export const saleSchema = new Schema(
   {
@@ -6,6 +7,9 @@ export const saleSchema = new Schema(
       type: Date,
       required: true,
       index: true,
+    },
+    fNo: {
+      type: Number,
     },
     refNo: {
       type: String,
@@ -16,6 +20,7 @@ export const saleSchema = new Schema(
         id: { type: String },
         name: { type: String },
         displayName: { type: String },
+        customerGroup: { type: String },
       },
     },
     patient: {
@@ -94,6 +99,7 @@ export const saleSchema = new Schema(
     },
     saleType: {
       type: String,
+      index: true,
     },
     customerPending: {
       type: String,
@@ -124,12 +130,41 @@ export const saleSchema = new Schema(
       maxlength: 50,
       index: true,
     },
+    voucherName: {
+      type: String,
+      index: true,
+    },
+    voucherType: {
+      type: String,
+    },
+    cashAmount: {
+      type: Number,
+      set: x => roundValue(x, 2),
+      default: 0,
+    },
+    eftAmount: {
+      type: Number,
+      set: x => roundValue(x, 2),
+      default: 0,
+    },
+    bankAmount: {
+      type: Number,
+      set: x => roundValue(x, 2),
+      default: 0,
+    },
+    creditAmount: {
+      type: Number,
+      set: x => roundValue(x, 2),
+      default: 0,
+    },
     amount: {
       type: Number,
+      set: x => roundValue(x, 2),
       default: 0,
     },
     discount: {
       type: Number,
+      set: x => roundValue(x, 2),
       default: 0,
     },
     lut: {
@@ -145,9 +180,10 @@ export const saleSchema = new Schema(
         shipThrough: String,
         shippingDate: Date,
         trackingNo: String,
-        shippingAddress: {
+        deliveryAddress: {
           type: {
-            street: String,
+            id: String,
+            address: String,
             city: String,
             pincode: String,
             mobile: String,
@@ -155,6 +191,7 @@ export const saleSchema = new Schema(
               type: {
                 name: String,
                 defaultName: String,
+                code: Number,
               },
             },
             country: {
@@ -163,7 +200,6 @@ export const saleSchema = new Schema(
                 defaultName: String,
               },
             },
-            contactPerson: String,
           },
         },
         shippingCharge: Number,
@@ -176,10 +212,10 @@ export const saleSchema = new Schema(
         },
         taxAmount: {
           type: {
-            cgst: Number,
-            sgst: Number,
-            igst: Number,
-            cess: Number,
+            cgst: { type: Number, set: x => roundValue(x, 2) },
+            sgst: { type: Number, set: x => roundValue(x, 2) },
+            igst: { type: Number, set: x => roundValue(x, 2) },
+            cess: { type: Number, set: x => roundValue(x, 2) },
           },
         },
       },
@@ -201,13 +237,19 @@ export const saleSchema = new Schema(
         batchNo: String,
         hsnCode: String,
         serialNo: Number,
-        unit: { id: String, name: String, displayName: String, conversion: Number },
+        unit: {
+          id: String,
+          name: String,
+          displayName: String,
+          conversion: Number,
+        },
         qty: Number,
-        rate: Number,
+        rate: { type: Number, set: x => roundValue(x, 2) },
         sRateTaxInc: Boolean,
-        mrp: Number,
+        mrp: { type: Number, set: x => roundValue(x, 2) },
         discount: {
           type: Number,
+          set: x => roundValue(x, 2),
           default: 0,
         },
         unitPrecision: Number,
@@ -227,27 +269,38 @@ export const saleSchema = new Schema(
         natureOfTrn: String,
         cgstAmount: {
           type: Number,
+          set: x => roundValue(x, 2),
           default: 0,
         },
         sgstAmount: {
           type: Number,
+          set: x => roundValue(x, 2),
           default: 0,
         },
         igstAmount: {
           type: Number,
+          set: x => roundValue(x, 2),
           default: 0,
         },
         cessAmount: {
           type: Number,
+          set: x => roundValue(x, 2),
           default: 0,
         },
         taxableAmount: {
           type: Number,
+          set: x => roundValue(x, 2),
           default: 0,
         },
         assetAmount: {
           type: Number,
+          set: x => roundValue(x, 2),
           default: 0,
+        },
+        // sales incharge
+        sInc: {
+          type: String,
+          ref: 'SalesPeople',
         },
       },
     ],
@@ -262,11 +315,14 @@ export const saleSchema = new Schema(
           },
           required: true,
         },
+        isAlt: Boolean,
         credit: {
           type: Number,
+          set: x => roundValue(x, 2),
         },
         debit: {
           type: Number,
+          set: x => roundValue(x, 2),
         },
       },
     ],
@@ -288,4 +344,6 @@ export const saleSchema = new Schema(
     },
   },
   { timestamps: true },
-);
+)
+  .index({ updatedAt: 1 })
+  .index({ 'branch.id': 1 });

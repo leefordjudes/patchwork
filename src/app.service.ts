@@ -25,21 +25,23 @@ export class AppService {
   constructor(
     @InjectModel('Sale')
     private readonly saleModel: Model<Sale>,
-  ) { }
+  ) {}
 
   async processCreditSale(from_date: string, to_date: string) {
-    const sales = await this.saleModel.find({
-      date: { $gte: new Date(from_date), $lte: new Date(to_date) },
-      saleType: 'credit',
-    }).sort({ date: 1 });
+    const sales = await this.saleModel
+      .find({
+        date: { $gte: new Date(from_date), $lte: new Date(to_date) },
+        saleType: 'credit',
+      })
+      .sort({ date: 1 });
 
     const result = [];
     for (const sale of sales) {
       const customerName = sale?.customer?.displayName
         ? sale.customer.displayName
         : sale?.customer?.name
-          ? sale.customer.name
-          : '';
+        ? sale.customer.name
+        : '';
       const data = {
         billDate: moment(sale.date)
           .format('DD-MM-YYYY')
@@ -58,6 +60,42 @@ export class AppService {
       const groupedTax = _.groupBy(sale.invTrns, x =>
         x.tax ? x.tax.name : null,
       );
+      let gst0 = 0,
+        cgst0 = 0,
+        sgst0 = 0;
+      const t0 = 'GST 0%';
+      if (groupedTax.hasOwnProperty(t0)) {
+        cgst0 = roundValue(
+          _.reduce(groupedTax[t0], (s, n) => s + n.cgstAmount, 0),
+          2,
+        );
+        sgst0 = roundValue(
+          _.reduce(groupedTax[t0], (s, n) => s + n.sgstAmount, 0),
+          2,
+        );
+        gst0 = roundValue(
+          _.reduce(groupedTax[t0], (s, n) => s + n.taxableAmount, 0),
+          2,
+        );
+      }
+      let gst3 = 0,
+        cgst3 = 0,
+        sgst3 = 0;
+      const t3 = 'GST 3%';
+      if (groupedTax.hasOwnProperty(t3)) {
+        cgst3 = roundValue(
+          _.reduce(groupedTax[t3], (s, n) => s + n.cgstAmount, 0),
+          2,
+        );
+        sgst3 = roundValue(
+          _.reduce(groupedTax[t3], (s, n) => s + n.sgstAmount, 0),
+          2,
+        );
+        gst3 = roundValue(
+          _.reduce(groupedTax[t3], (s, n) => s + n.taxableAmount, 0),
+          2,
+        );
+      }
       let gst5 = 0,
         cgst5 = 0,
         sgst5 = 0;
@@ -134,7 +172,7 @@ export class AppService {
         );
       }
 
-      const total = gst5 + gst12 + gst18 + gst28;
+      const total = gst0 + gst3 + gst5 + gst12 + gst18 + gst28;
       _.assign(data, {
         totalTaxableAmount: roundValue(total, 2).toFixed(2),
         netAmount: roundValue(sale.amount, 2).toFixed(2),
@@ -176,7 +214,7 @@ export class AppService {
           _id: '$date',
           amount: { $sum: '$amount' },
           invTrns: { $push: '$invTrns' },
-        }
+        },
       },
       {
         $project: {
@@ -417,7 +455,18 @@ export class AppService {
           2,
         );
       }
-      const totalTaxableAmount = gst0 + gst01 + gst025 + gst1 + gst1_5 + gst3 + gst5 + gst7_5 + gst12 + gst18 + gst28;
+      const totalTaxableAmount =
+        gst0 +
+        gst01 +
+        gst025 +
+        gst1 +
+        gst1_5 +
+        gst3 +
+        gst5 +
+        gst7_5 +
+        gst12 +
+        gst18 +
+        gst28;
       _.assign(dayRow, {
         TaxableAmt: roundValue(totalTaxableAmount, 2),
         GST0: roundValue(gst0, 2),
@@ -521,7 +570,22 @@ export class AppService {
           },
           table: {
             headerRows: 1,
-            widths: ['9%', '6%', '5%', '5%', '5%', '5%', '6%', '6%', '5%', '7%', '7%', '5%', '7%', '7%'],
+            widths: [
+              '9%',
+              '6%',
+              '5%',
+              '5%',
+              '5%',
+              '5%',
+              '6%',
+              '6%',
+              '5%',
+              '7%',
+              '7%',
+              '5%',
+              '7%',
+              '7%',
+            ],
             body: [
               [
                 {

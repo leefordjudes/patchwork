@@ -2,8 +2,14 @@ import { Document } from 'mongoose';
 
 export interface Sale extends Document {
   date: Date;
+  fNo: number;
   refNo: string;
-  customer: { id: string; name: string; displayName: string };
+  customer: {
+    id: string;
+    name: string;
+    displayName: string;
+    customerGroup: string;
+  };
   patient: { id: string; name: string; displayName: string };
   doctor: { id: string; name: string; displayName: string };
   branch: { id: string; name: string; displayName: string };
@@ -27,6 +33,12 @@ export interface Sale extends Document {
   cashRegisterApprovedBy: string;
   description: string;
   voucherNo: string;
+  voucherName: string;
+  voucherType: string;
+  cashAmount: number;
+  eftAmount: number;
+  bankAmount: number;
+  creditAmount: number;
   amount: number;
   discount: number;
   lut: boolean;
@@ -35,14 +47,14 @@ export interface Sale extends Document {
     shipThrough: string;
     shippingDate: Date;
     trackingNo: string;
-    shippingAddress: {
-      street: string;
+    deliveryAddress: {
+      id: string;
+      address: string;
       city: string;
       pincode: string;
       mobile: string;
-      state: { name: string; defaultName: string };
+      state: { name: string; defaultName: string; code: number };
       country: { name: string; defaultName: string };
-      contactPerson: string;
     };
     shippingCharge: number;
     tax: {
@@ -59,7 +71,13 @@ export interface Sale extends Document {
   };
   invTrns: Array<{
     id: string;
-    inventory: { id: string; name: string; displayName: string; bwd: boolean; hsnCode: string };
+    inventory: {
+      id: string;
+      name: string;
+      displayName: string;
+      bwd: boolean;
+      hsnCode: string;
+    };
     batch: string;
     batchNo: string;
     hsnCode: string;
@@ -91,9 +109,16 @@ export interface Sale extends Document {
     igstAmount: number;
     cessAmount: number;
     taxableAmount: number;
+    sInc: string; // sales incharge
   }>;
   acTrns: Array<{
-    account: { id: string; name: string; displayName: string; defaultName: string };
+    account: {
+      id: string;
+      name: string;
+      displayName: string;
+      defaultName: string;
+    };
+    isAlt: boolean;
     credit: number;
     debit: number;
   }>;
