@@ -481,7 +481,7 @@ export class AppService {
         GST12: roundValue(gst12, 2),
         GST18: roundValue(gst18, 2),
         GST28: roundValue(gst28, 2),
-        
+
         // Tax only
         // GST0: roundValue(sgst0 + cgst0, 2),
         // GST01: roundValue(sgst01 + cgst01, 2),
@@ -594,12 +594,12 @@ export class AppService {
               '5%',
               '5%',
               '6%',
-              '6%',
+              '8%',
               '5%',
-              '7%',
+              '8%',
               '7%',
               '5%',
-              '7%',
+              '8%',
               '7%',
             ],
             body: [
