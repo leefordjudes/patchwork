@@ -15,11 +15,13 @@ export class AppController {
 
   @Get('credit-sale')
   async processCreditSale(@Query() query: any, @Res() res: Response) {
+  // async processCreditSale(@Query() query: any) {
     const { from_date, to_date } = query;
     if (!from_date || !to_date) {
       throw new BadRequestException('from_date, to_date is required');
     }
     const sales = await this.appService.processCreditSale(from_date, to_date);
+    // return sales;
     const fromDate = moment(from_date)
       .format('DD-MMM-YYYY')
       .toString();
@@ -46,7 +48,7 @@ export class AppController {
 
   @Get('cash-sale')
   async processCashSale(@Query() query: any, @Res() res: Response) {
-    // async processCashSale(@Query() query: any) {
+  // async processCashSale(@Query() query: any) {
     const { from_date, to_date } = query;
     if (!from_date || !to_date) {
       throw new BadRequestException('from_date, to_date is required');
