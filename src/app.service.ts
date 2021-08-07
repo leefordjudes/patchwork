@@ -56,29 +56,32 @@ export class AppService {
     const customers: any = await con.db().collection('customers')
     .find({_id: { $in: custIds }}, { projection: { displayName: 1 }}).toArray();
     
-    console.log('Sales Count: ', sales.length);
-    console.log('Customers Count: ', customers.length);
-    /*
+    console.log('Credit Sales Count: ', sales.length);
+    console.log('Credit Customers Count: ', customers.length);
+    //*
     let usedTaxes = [];
     for (const sale of sales) {
       const taxes = sale.taxSummary.map((t) => t.tax);
       usedTaxes.push(...taxes);
     }
     usedTaxes = _.chain(usedTaxes).compact().uniq().value();
-    return usedTaxes;
-    */
+    console.log({usedTaxes});
+    // return usedTaxes;
+    //*/
 
-    let result = [];
+    const result = [];
     for (const sale of sales) {
       const customer = customers.find((c) => c._id.toString() === sale.customer.toString());
       const customerName = customer.displayName || '';
       const gst0 = sale.taxSummary.find((t) => t.tax === 'gst0')?.taxableAmount || 0
+      const gst0p25 = sale.taxSummary.find((t) => t.tax === 'gst0p25')?.taxableAmount || 0
       const gst3 = sale.taxSummary.find((t) => t.tax === 'gst3')?.taxableAmount || 0
       const gst5 = sale.taxSummary.find((t) => t.tax === 'gst5')?.taxableAmount || 0
       const gst12 = sale.taxSummary.find((t) => t.tax === 'gst12')?.taxableAmount || 0
       const gst18 = sale.taxSummary.find((t) => t.tax === 'gst18')?.taxableAmount || 0
       const gst28 = sale.taxSummary.find((t) => t.tax === 'gst28')?.taxableAmount || 0
-      const total = gst0 + gst3 + gst5 + gst12 + gst18 + gst28;
+      const gstna = sale.taxSummary.find((t) => t.tax === 'gstna')?.taxableAmount || 0
+      const total = gst0 + gst0p25 + gst3 + gst5 + gst12 + gst18 + gst28 + gstna;
 
       const data = {
         billDate: moment(sale.date)
@@ -159,9 +162,9 @@ export class AppService {
       },
     ]).toArray();
     
-    console.log('Sales Count: ', sales.length);
+    // console.log('Cash Sales Count: ', sales.length);
 
-    /*
+    //*
     // used taxes: ['gstna', 'gst0', 'gst3', 'gst5', 'gst12', 'gst18', 'gst28',]
     let usedTaxes = [];
     for (const sale of sales) {
@@ -169,8 +172,9 @@ export class AppService {
       usedTaxes.push(...taxes);
     }
     usedTaxes = _.chain(usedTaxes).compact().uniq().value();
-    return usedTaxes;
-    */
+    console.log({usedTaxes});
+    //return usedTaxes;
+    //*/
     //return sales;
 
     const cashSaleResult = [];
